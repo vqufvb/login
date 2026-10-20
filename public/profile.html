@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hồ sơ của bạn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main class="profile-wrap">
+    <section class="profile" aria-live="polite">
+      <div class="who">
+        <div id="avatar" class="ph"></div>
+        <div>
+          <h1 id="name">Đang tải...</h1>
+          <p id="email"></p>
+        </div>
+      </div>
+
+      <dl>
+        <dt>Đăng nhập bằng</dt><dd id="provider"></dd>
+        <dt>Mã tài khoản</dt><dd id="uid"></dd>
+      </dl>
+
+      <button id="logout" class="btn" type="button">Đăng xuất</button>
+    </section>
+  </main>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const providerName = { google: 'Google', github: 'GitHub' };
+
+    fetch('/api/me').then(r => {
+      if (!r.ok) { location.href = '/'; return null; }
+      return r.json();
+    }).then(u => {
+      if (!u) return;
+      $('name').textContent = u.name || 'Người dùng';
+      $('email').textContent = u.email || 'Tài khoản này không chia sẻ email';
+      $('provider').textContent = providerName[u.provider] || u.provider;
+      $('uid').textContent = u.id;
+      if (u.avatar) {
+        const img = document.createElement('img');
+        img.src = u.avatar; img.alt = 'Ảnh đại diện của ' + (u.name || 'bạn');
+        img.referrerPolicy = 'no-referrer';
+        $('avatar').replaceWith(img);
+      }
+    });
+
+    $('logout').addEventListener('click', async () => {
+      await fetch('/logout', { method: 'POST' });
+      location.href = '/';
+    });
+  </script>
+</body>
+</html>

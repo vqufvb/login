@@ -1,0 +1,41 @@
+DANG NHAP BANG GOOGLE VA GITHUB (OAuth 2.0)
+===========================================
+
+1. CHAY PROJECT
+   npm install
+   Copy .env.example thanh .env, dien thong tin o buoc 2 va 3
+   npm start
+   Mo http://localhost:3000   (phai mo bang localhost:3000, khong mo file HTML truc tiep)
+
+2. TAO UNG DUNG GOOGLE
+   a. Vao https://console.cloud.google.com, tao Project moi.
+   b. APIs & Services > OAuth consent screen: chon External, dien ten app va email.
+      O muc Test users, them email Gmail ban se dung de thu (app dang o che do Testing).
+   c. APIs & Services > Credentials > Create credentials > OAuth client ID
+      - Application type: Web application
+      - Authorized redirect URIs: http://localhost:3000/auth/google/callback
+   d. Copy Client ID va Client secret vao .env (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET).
+
+3. TAO UNG DUNG GITHUB
+   a. Vao https://github.com/settings/developers > OAuth Apps > New OAuth App
+   b. Homepage URL: http://localhost:3000
+      Authorization callback URL: http://localhost:3000/auth/github/callback
+   c. Register application, bam Generate a new client secret.
+   d. Copy vao .env (GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET).
+
+4. LUONG HOAT DONG (de thuyet trinh)
+   1) Nguoi dung bam "Dang nhap bang Google/GitHub" -> trinh duyet toi /auth/google (hoac /auth/github).
+   2) Server chuyen huong sang trang dang nhap cua Google/GitHub.
+   3) Nguoi dung dong y chia se thong tin.
+   4) Google/GitHub chuyen ve /auth/.../callback kem mot ma tam (code).
+   5) Server doi code lay access token, lay profile (ten, email, anh).
+   6) Server luu profile vao session, chuyen toi /profile.
+   7) Trang /profile goi /api/me de hien thong tin. Dang xuat = POST /logout xoa session.
+
+5. LUU Y BAO MAT
+   - Client Secret chi nam trong .env o phia server, .env da nam trong .gitignore.
+   - Session dung MemoryStore: khoi dong lai server la mat dang nhap. Du cho bai tap;
+     khi lam that nen dung Redis hoac database.
+   - Khi dua len server that: doi BASE_URL, them redirect URI moi o Google/GitHub,
+     bat cookie secure (HTTPS) va dat SESSION_SECRET ngau nhien.
+   - GitHub co the khong tra email neu nguoi dung an email; trang ho so se bao khong co email.
